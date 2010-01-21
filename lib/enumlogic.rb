@@ -34,9 +34,8 @@ module Enumlogic
     constant_name = options[:constant] || field.to_s.pluralize.upcase
     const_set constant_name, values_array unless const_defined?(constant_name)
     
-    new_hash = {}
-    values_hash.each { |key, text| new_hash[text] = key }
-    (class << self; self; end).send(:define_method, "#{field}_options") { new_hash }
+
+    (class << self; self; end).send(:define_method, "#{field}_options") { new_hash = {}; values_hash.each { |key, text| new_hash[I18n.t(text)] = key }; new_hash }
     
     define_method("#{field}_key") do
       value = send(field)
@@ -47,7 +46,7 @@ module Enumlogic
     define_method("#{field}_text") do
       value = send(field)
       return nil if value.nil?
-      values_hash[value]
+      I18n.t(values_hash[value])
     end
     
     values_array.each do |value|
